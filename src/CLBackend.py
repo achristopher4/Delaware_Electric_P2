@@ -60,12 +60,11 @@ class DatabaseController:
     def create_newID(self, table):
         """ Create a new unique ID for a table """
         element = (self.basic_execute(f'SELECT MAX({table}_ID) FROM {table}')).fetchone()
+        table_prefix = self.get_prefix(table)
         if element == None:
-            return self.get_prefix(table) + '1'.zfill(6) if self.get_prefix(table) != None else None
+            return table_prefix + '1'.zfill(6) if table_prefix != None else None
         else:
-            ##
-            ##
-            return self.get_prefix(table) + element[:] if self.get_prefix(table) != None else None
+            return table_prefix + str(int(element[len(table_prefix):]) + 1).zfill(6) if table_prefix != None else None
 
     def insert(self, table, **preset_attributes):
         """ Insert new value into a specified table with preset attributes if provided. """
