@@ -6,6 +6,7 @@ import os
 import sqlite3
 import datetime
 from sqlite3 import Error
+from Search import BinarySearch
 
     ### Notes to self:
         ### Make sure to call non-kargs by argument name when calling function and give name to kargs
@@ -49,13 +50,22 @@ class DatabaseController:
         """ Execute a sql statement with any addition values if necessary. """
         return self.__cur.execute(sql, values)
 
-    def get_prefix(self, ID):
+    def get_prefix(self, table):
         """ Get the prefix of the primary key. """
-        return
+        dic = {'Employee':'EMP', 'Sales':'SAL', 'Job':'JOB', 'Task':'RJT', 'Client':'CLI', 'Campus':'CAM', 'Manager':'MAN',
+        'Employee_Photo':'PEM', 'Supplier':'SUP', 'Inventory':'INV', 'Inventory_Photo':'PIN', 'Equipment':'EQU', 'Equipment_Photo':'PEQ',
+        'Task_Photo':'PJT', 'Employee_Time_Clock':'TCE'}
+        return dic[table] if table in dic else None
 
     def create_newID(self, table):
         """ Create a new unique ID for a table """
-        return
+        element = (self.basic_execute(f'SELECT MAX({table}_ID) FROM {table}')).fetchone()
+        if element == None:
+            return self.get_prefix(table) + '1'.zfill(6) if self.get_prefix(table) != None else None
+        else:
+            ##
+            ##
+            return self.get_prefix(table) + element[:] if self.get_prefix(table) != None else None
 
     def insert(self, table, **preset_attributes):
         """ Insert new value into a specified table with preset attributes if provided. """
