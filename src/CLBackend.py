@@ -7,10 +7,14 @@ import sqlite3
 import datetime
 from sqlite3 import Error
 
-class DatabaseControl:
+    ### Notes to self:
+        ### Make sure to call non-kargs by argument name when calling function and give name to kargs
+            ## EX: test(t1 = 4, name = "Alex")
+
+class DatabaseController:
     def __init__(self):
         """ """
-        path = '/Users/alexchristopher/Desktop/Intern_Projects/Delaware_Electric'
+        path = os.getcwd()
         self.__DBName = 'DE_Main'
         self.__conn = sqlite3.connect(self.__DBName) # create new database
         self.__cur = self.__conn.cursor()   # Save the database in current working directory
@@ -27,13 +31,23 @@ class DatabaseControl:
         """ Close the database. """
         self.__conn.close()
 
-    def basic_execute(self, sql, **kargs):
-        """ Execute a basic sql statement. """
-        return
+    def print_sql(self, sql):
+        """ Print sql objects to command line. """
+        for line in sql: print(line)
 
-    def complex_execute(self, sql, **kargs):
+    def get_attributes(self, table):
+        """ Return the attributes of a table. """
+        attributes = []
+        for x in self.__cur.execute('PRAGMA TABLE_INFO({})'.format(table)): attributes.append(x)
+        return attributes
+
+    def basic_execute(self, sql):
+        """ Execute a basic sql statement. """
+        return self.__cur.execute(sql)
+
+    def value_dependent_execute(self, sql, *values):
         """ Execute a sql statement with any addition values if necessary. """
-        return
+        return self.__cur.execute(sql, values)
 
     def get_prefix(self, ID):
         """ Get the prefix of the primary key. """

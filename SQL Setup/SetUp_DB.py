@@ -1,13 +1,14 @@
 ## Set up SQL database for delaware electric
+## Author: Alexander Christopher
+## Date: 07/27/2021
 
 import os
 import sqlite3
 from sqlite3 import Error
 
-path = '/Users/alexchristopher/Desktop/Intern_Projects/Delaware_Electric_P2/src'
-DB_name = 'DE_Main'
+path = '../src/DE_Main'
 
-conn = sqlite3.connect(DB_name) # create new database
+conn = sqlite3.connect(path) # create new database
 
 c = conn.cursor()   # Save the database in current working directory
 
