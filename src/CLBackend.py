@@ -66,11 +66,127 @@ class DatabaseController:
         else:
             return table_prefix + str(int(element[len(table_prefix):]) + 1).zfill(6) if table_prefix != None else None
 
-    def insert(self, table, **preset_attributes):
+    def insert(self, table, **user_value, **preset_attribute_value):
         """ Insert new value into a specified table with preset attributes if provided. """
-        return
+        table_attributes = self.get_attributes(table)
+        sql = f'INSERT INTO {table} ('
+        attributes = ''
+        placeholder_values = ') VALUES (?, '
+        values = []
+        preset_keys = preset_attribute_value.keys()
+        user_keys  = user_value.keys()
+        for x in range(len(table_attributes)):
+            if table_attributes[x][1] in preset_keys:
+                ## Take value from preset_attributes
+                if preset_attribute_value[table_attributes[x][1]] == None:
+                    ## Add None to values
+                    values.append(None)
+                elif table_attributes[x][2] == 'TEXT':
+                    ## Add TEXT to values
+                    try:
+                        values.append(preset_attribute_value[table_attributes[x][1]])
+                    except:
+                        values.append(None)
+                elif table_attributes[x][2] == 'INT':
+                    ## Add INT to values
+                    try:
+                        values.append(int(preset_attribute_value[table_attributes[x][1]]))
+                    except:
+                        values.append(None)
+                elif table_attributes[x][2] == 'REAL':
+                    ## Add REAL to values
+                    try:
+                        values.append(float(preset_attribute_value[table_attributes[x][1]]))
+                    except:
+                        values.append(None)
+                elif table_attributes[x][2] == 'DATE':
+                    ## Add DATE to values if requirements are met
+                    if preset_attribute_value[table_attributes[x][1]] != None:
+                        ## Add given value to values
+                        values.append(preset_attribute_value[table_attributes[x][1]])
+                    elif table_attributes[x][1] in ('Start_Date', 'Purchase_Date', 'Date_Purchased'):
+                        ## Add current DATETIME to values
+                        values.append((datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S"))
+                    elif 'Year' in preset_keys:
+                        ## Add current year
+                        values.append((datetime.datetime.now()).strftime("%Y"))
+                    elif 'Week' in preset_keys:
+                        # Add current week
+                        values.append(str((datetime.date.today())[1]))
+                    elif 'Day' in preset_keys:
+                        # Add Current day
+                        values.append((datetime.datetime.now()).strftime("%d"))
+                    elif 'Start_Time' in preset_keys:
+                        # add current time
+                        values.append((datetime.datetime.now()).strftime("%H:%M:%S"))
+                    else:
+                        ## Add NONE to values
+                        values.append(None)
+                elif table_attributes[x][2] == 'BLOB':
+                    ## Add BLOB to values
+                    try:
+                        values.append(preset_attribute_value[table_attributes[x][1]])
+                    except:
+                        values.append(None)
+                else:
+                    ## Default to None
+                    values.append(None)
+            elif table_attributes[x][1] in user_keys:
+                ## Take value from user input
+                if user_value[table_attributes[x][1]] == None:
+                    ## Add None to values
+                    values.append(None)
+                elif table_attributes[x][2] == 'TEXT':
+                    ## Add TEXT to values
+                    try:
+                        values.append(user_value[table_attributes[x][1]])
+                    except:
+                        values.append(None)
+                elif table_attributes[x][2] == 'INT':
+                    ## Add INT to values
+                    try:
+                        values.append(int(user_value[table_attributes[x][1]]))
+                    except:
+                        values.append(None)
+                elif table_attributes[x][2] == 'REAL':
+                    ## Add REAL to values
+                    try:
+                        values.append(float(user_value[table_attributes[x][1]]))
+                    except:
+                        values.append(None)
+                elif table_attributes[x][2] == 'DATE':
+                    ## Add DATE to values if requirements are met
+                    if user_value[table_attributes[x][1]] != None:
+                        ## Add given value to values
+                        values.append(user_value[table_attributes[x][1]])
+                    else:
+                        ## Add NONE to values
+                        values.append(None)
+                elif table_attributes[x][2] == 'BLOB':
+                    ## Add BLOB to values
+                    try:
+                        values.append(user_value[table_attributes[x][1]])
+                    except:
+                        values.append(None)
+                else:
+                    ## Default to None
+                    values.append(None)
+            else:
+                ## Add None as there is no give input directive
+                values.append(None)
+            attributes += f'{table_attributes[x][1]}, '
+            placeholder_values += '?, '
+        attributes = attributes[:-2]
+        placeholder_values = placeholder_values[:-2] + ')'
+        sql += attributes + placeholder_values
+        try:
+            self.__cur.execute(sql, tuple(values))
+            self.__conn.commit()
+            return True
+        except:
+            return False
 
-    def insert_weak(self, table, ID, **preset_attributes):
+    def insert_weak(self, table, ID, **user_value, **preset_attributes):
         """ Insert new value into a specified weak table with preset attributes if provided. """
         return
 
