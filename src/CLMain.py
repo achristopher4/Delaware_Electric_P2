@@ -21,6 +21,7 @@ class CLMain(DatabaseController):
                 print(menu)
                 user_choice = input('Select Option: ')
                 print()
+                self.insert(table = 'Employee', preset_attribute_value)
         finally:
             self.close_database()
             print('\nGoodbye')

@@ -66,7 +66,8 @@ class DatabaseController:
         else:
             return table_prefix + str(int(element[len(table_prefix):]) + 1).zfill(6) if table_prefix != None else None
 
-    def insert(self, table, **user_value, **preset_attribute_value):
+                            ## Need to fix argument default values
+    def insert(self, table, user_value = None, preset_attribute_value = None):
         """ Insert new value into a specified table with preset attributes if provided. """
         table_attributes = self.get_attributes(table)
         sql = f'INSERT INTO {table} ('
@@ -186,13 +187,53 @@ class DatabaseController:
         except:
             return False
 
-    def insert_weak(self, table, ID, **user_value, **preset_attributes):
+    def insert_weak(self, table, ID, user_value=None, preset_attributes=None):
         """ Insert new value into a specified weak table with preset attributes if provided. """
         return
 
     def find(self, table, **additional):
-        """ Search a specified table with any"""
-        return
+        """ Search a specified table with any. Attributes key: Exact Name of desired attribute. Where key: Index of attribute in get_attributes function. Order key: list, index 0 is the values, index 1 is the descending option if requested."""
+        table_attributes = self.get_attributes(table)
+        sql = 'SELECT '
+        if len(additional) == 0:
+            ## The most general search of a table
+            return self.__cur.execute(sql + f'* FROM {table}')
+        if 'Attributes' in additional:
+            ## Add desired attributes to query
+            sql += ', '.join(additional['Attributes']) + f' FROM {table} '
+        else:
+            ## Default to all attributes if attributes not in additional
+            sql += f'* FROM {table} '
+        if 'Where' in additional:
+            ## Add where and all specified search clause(s) to query
+            query = []
+            for index in additional['Where']:
+                if table_attributes[index[0]][2] == 'TEXT':
+                    ## Text search query
+                    query.append(f"{table_attributes[index[0]][1]} == '{index[1]}'")
+                elif table_attributes[index[0]][2] == 'INT':
+                    ## Int search query
+                    query.append(f"{table_attributes[index[0]][1]} == {int(index[1])}")
+                elif table_attributes[index[0]][2] == 'REAL':
+                    ## Real search query
+                    query.append(f"{table_attributes[index[0]][1]} == {float(index[1])}")
+                elif table_attributes[index[0]][2] == 'BLOB':
+                    ## Blob search query
+                    query.append(f"{table_attributes[index[0]][1]} == {index[1]}")
+                elif table_attributes[index[0]][2] == 'NULL':
+                    ## Null search query
+                    query.append(f"{table_attributes[index[0]][1]} == {index[1]}")
+                else:
+                    ## No type given
+                    e = 0
+            sql += 'WHERE ' + ' AND '.join(query)
+        if 'Order' in additional:
+            ## The most genreal search of a table, but the query results are ordered
+            if len(additional['ORDER']) == 1:
+                sql += f' ORDER {additional['ORDER'][0]}'
+            else:
+                sql += f' ORDER {additional['ORDER'][0]} DESC'
+        return self.__cur.execute(sql)
 
     def find_weak(self):
         """ """
