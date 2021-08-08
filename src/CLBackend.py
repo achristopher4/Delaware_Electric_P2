@@ -17,7 +17,7 @@ class DatabaseController:
         """ """
         path = os.getcwd()
         self.__DBName = 'DE_Main'
-        self.__conn = sqlite3.connect(self.__DBName) # create new database
+        self.__conn = sqlite3.connect(self.__DBName) # open database if exists else create new data
         self.__cur = self.__conn.cursor()   # Save the database in current working directory
 
     def commit_database(self):
@@ -59,23 +59,30 @@ class DatabaseController:
 
     def create_newID(self, table):
         """ Create a new unique ID for a table """
-        element = (self.basic_execute(f'SELECT MAX({table}_ID) FROM {table}')).fetchone()
+        element = self.basic_execute('SELECT {}_ID FROM {} WHERE {}_ID == (SELECT MAX({}_ID) FROM {})'.format(table, table, table, table, table))
+        element = element.fetchone()
         table_prefix = self.get_prefix(table)
+        print(element)
         if element == None:
             return table_prefix + '1'.zfill(6) if table_prefix != None else None
         else:
-            return table_prefix + str(int(element[len(table_prefix):]) + 1).zfill(6) if table_prefix != None else None
+            return table_prefix + str(int(element[0][len(table_prefix):]) + 1).zfill(6) if table_prefix != None else None
 
-                            ## Need to fix argument default values
     def insert(self, table, user_value = None, preset_attribute_value = None):
         """ Insert new value into a specified table with preset attributes if provided. """
         table_attributes = self.get_attributes(table)
         sql = f'INSERT INTO {table} ('
         attributes = ''
-        placeholder_values = ') VALUES (?, '
+        placeholder_values = ') VALUES ('
         values = []
-        preset_keys = preset_attribute_value.keys()
-        user_keys  = user_value.keys()
+        if preset_attribute_value != None:
+            preset_keys = preset_attribute_value.keys()
+        else:
+            preset_keys = []
+        if user_value != None:
+            user_keys  = user_value.keys()
+        else:
+            user_keys = []
         for x in range(len(table_attributes)):
             if table_attributes[x][1] in preset_keys:
                 ## Take value from preset_attributes
@@ -230,16 +237,16 @@ class DatabaseController:
         if 'Order' in additional:
             ## The most genreal search of a table, but the query results are ordered
             if len(additional['ORDER']) == 1:
-                sql += f' ORDER {additional['ORDER'][0]}'
+                sql += f" ORDER {additional['ORDER'][0]}"
             else:
-                sql += f' ORDER {additional['ORDER'][0]} DESC'
+                sql += f" ORDER {additional['ORDER'][0]} DESC"
         return self.__cur.execute(sql)
 
     def find_weak(self):
         """ """
         return
 
-    def delete(self):
+    def delete(self, table, ID, user_value = None, preset_attributes = None):
         """ Delete an item from a table. """
         return
 

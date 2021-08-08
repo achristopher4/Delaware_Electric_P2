@@ -16,12 +16,26 @@ class CLMain(DatabaseController):
         try:
             user_choice = ''
             print('')
-            menu = 'Main Menu:\n \n\t0: Exit'
+            menu = 'Main Menu:\n\t1: Insert Test Value\n\t2: Find Test Value \n\t0: Exit'
             while user_choice != '0':
                 print(menu)
                 user_choice = input('Select Option: ')
+                if user_choice == '1':
+                    ## Insert Test Value
+                    table = input('Enter Table: ')
+                    a = self.get_attributes(table)
+                    print(a)
+                elif user_choice == '2':
+                    ## Find test value
+                    table = input('Enter Table: ')
+                    Attributes = None
+                    Where = None
+                    Order = None
+                    if Attributes == None and Where == None and Order == None:
+                        self.print_sql(self.find(table))
+                    else:
+                        self.find(table, Attributes, Where, Order)
                 print()
-                self.insert(table = 'Employee', preset_attribute_value)
         finally:
             self.close_database()
             print('\nGoodbye')
