@@ -68,6 +68,10 @@ class DatabaseController:
         else:
             return table_prefix + str(int(element[0][len(table_prefix):]) + 1).zfill(6) if table_prefix != None else None
 
+    def get_current_datetime(self):
+        """ Return the current datetime in the format  %Y-%m-%d %H:%M:%S """
+        return (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S")
+
     def insert(self, table, user_value = None, preset_attribute_value = None):
         """ Insert new value into a specified table with preset attributes if provided. """
         table_attributes = self.get_attributes(table)
@@ -194,10 +198,13 @@ class DatabaseController:
         except:
             return False
 
+            ## Not Started. Could be redundant code.
     def insert_weak(self, table, ID, user_value=None, preset_attributes=None):
         """ Insert new value into a specified weak table with preset attributes if provided. """
         return
 
+        ## Need to add more variables to where statement
+        ## Need to add operator chioces to attributes statement
     def find(self, table, **additional):
         """ Search a specified table with any. Attributes key: Exact Name of desired attribute. Where key: Index of attribute in get_attributes function. Order key: list, index 0 is the values, index 1 is the descending option if requested."""
         table_attributes = self.get_attributes(table)
@@ -242,15 +249,29 @@ class DatabaseController:
                 sql += f" ORDER {additional['ORDER'][0]} DESC"
         return self.__cur.execute(sql)
 
+        ## Not Started. Could be redundant code.
     def find_weak(self):
         """ """
         return
 
-    def delete(self, table, ID, user_value = None, preset_attributes = None):
-        """ Delete an item from a table. """
-        return
+    def delete(self, table, ID, weak_table=None, weak_ID=None):
+        """ Delete an item from a table. Weak table given as list."""
+        find_ID = self.value_exists(table, ID)
+        if not find_ID:
+            return 'Value not in database'
+        else:
+            ## Insert Pop Up to confirm action
+            if weak_table == None:
+                ## Delete the value given from the table
+                self.__cur.execute(f"DELETE FROM {table} WHERE {table}_ID == {ID}")
+            else:
+                ## Delete the value given from the table and all of its attributes linked to this value
+                for wt in weak_table:
+                    self.__cur.execute(f"DELETE FROM {wt} WHERE {table}_ID == {ID}")
+                self.__cur.execute(f"DELETE FROM {table} WHERE {table}_ID == {ID}")
 
-    def delete_weak(self, table, ID):
+
+    def delete_weak(self, table, ID, weak_table, weak_ID):
         """ Delete linked value(s) from a weak entity. """
         return
 
