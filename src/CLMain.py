@@ -16,7 +16,7 @@ class CLMain(DatabaseController):
         try:
             user_choice = ''
             print('')
-            menu = 'Main Menu:\n\t1: Insert Test Value\n\t2: Find Test Value \n\t0: Exit'
+            menu = 'Main Menu:\n\t1: Insert Test Value\n\t2: Find Test Value\n\t3: Modify value\n\t4: Delete Value \n\t0: Exit'
             while user_choice != '0':
                 print(menu)
                 user_choice = input('Select Option: ')
@@ -35,6 +35,14 @@ class CLMain(DatabaseController):
                         self.print_sql(self.find(table))
                     else:
                         self.find(table, Attributes, Where, Order)
+                elif user_choice == '3':
+                    ## Modify Value
+                    break
+                elif user_choice == '4':
+                    ## Delete Value
+                    a = self.delete('Employee', 'Employee_ID', 'EMP000002')
+                    print(a)
+                self.commit_database()
                 print()
         finally:
             self.close_database()

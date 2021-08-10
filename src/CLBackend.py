@@ -205,6 +205,7 @@ class DatabaseController:
 
         ## Need to add more variables to where statement
         ## Need to add operator chioces to attributes statement
+        ## Need to add TEXT value field, will fail if not int, real, or numeric
     def find(self, table, **additional):
         """ Search a specified table with any. Attributes key: Exact Name of desired attribute. Where key: Index of attribute in get_attributes function. Order key: list, index 0 is the values, index 1 is the descending option if requested."""
         table_attributes = self.get_attributes(table)
@@ -249,29 +250,33 @@ class DatabaseController:
                 sql += f" ORDER {additional['ORDER'][0]} DESC"
         return self.__cur.execute(sql)
 
-        ## Not Started. Could be redundant code.
+            ## Not Started. Could be redundant code.
     def find_weak(self):
         """ """
         return
 
-    def delete(self, table, ID, weak_table=None, weak_ID=None):
+    def delete(self, table, attribute, ID, weak_table=None, weak_attribute=None):
         """ Delete an item from a table. Weak table given as list."""
-        find_ID = self.value_exists(table, ID)
+        find_ID = self.value_exists(table, attribute, ID, text=True)
         if not find_ID:
-            return 'Value not in database'
+            ## Value does not exists within the specified table.
+            return False
         else:
             ## Insert Pop Up to confirm action
             if weak_table == None:
                 ## Delete the value given from the table
-                self.__cur.execute(f"DELETE FROM {table} WHERE {table}_ID == {ID}")
+                self.__cur.execute(f"DELETE FROM {table} WHERE {table}_ID == '{ID}'")
             else:
                 ## Delete the value given from the table and all of its attributes linked to this value
                 for wt in weak_table:
-                    self.__cur.execute(f"DELETE FROM {wt} WHERE {table}_ID == {ID}")
-                self.__cur.execute(f"DELETE FROM {table} WHERE {table}_ID == {ID}")
+                    if self.value_exists(wt, f'{table}_ID', ID):
+                        self.__cur.execute(f"DELETE FROM {wt} WHERE {table}_ID == '{ID}'")
+                self.__cur.execute(f"DELETE FROM {table} WHERE {table}_ID == '{ID}'")
+        self.commit_database()
+        return True
 
-
-    def delete_weak(self, table, ID, weak_table, weak_ID):
+            ## Not Started. Could be redundant code.
+    def delete_weak(self, table, ID):
         """ Delete linked value(s) from a weak entity. """
         return
 
@@ -283,9 +288,19 @@ class DatabaseController:
         """ Modify a value and all weak values if applicable. """
         return
 
-    def value_exists(self):
-        """ Return True if a value exists with specified attribute values or False if it does not. """
-        return
+    def value_exists(self, table, attribute, value, like=False, text=False):
+        """ Return True if a value exists with specified attribute values or False if it does not. table arg: list the table to search. attribute arg: list the attribute search by. value arg: list the value to find in the table. like arg: specify if like clause will be used in statement. text arg: will use quotes in clause."""
+        if not like:
+            if text:
+                find = self.__cur.execute(f"SELECT * FROM {table} WHERE {attribute} == '{value}'")
+            else:
+                find = self.__cur.execute(f"SELECT * FROM {table} WHERE {attribute} == {value}")
+        else:
+            find = self.__cur.execute(f"SELECT * FROM {table} WHERE {attribute} LIKE '{value}'")
+        if find.fetchone() != None:
+            return True
+        else:
+            return False
 
     def count_results(self):
         """ Return the number of results that are returned from query. """
