@@ -14,39 +14,102 @@ class CLMain(DatabaseController):
         """ Initialize class objects. """
         DatabaseController.__init__(self)
         try:
-            user_choice = ''
-            print('')
-            menu = 'Main Menu:\n\t1: Insert Test Value\n\t2: Find Test Value\n\t3: Modify value\n\t4: Delete Value \n\t0: Exit'
-            while user_choice != '0':
+            print("""Welcome to Delaware Electric Motor Supply Company""")
+            menu = """Main Menu \n\t1: Jobs \n\t2: Sales \n\t3: Employees \n\t4: Clients \n\t5: Suppliers \n\t6: Inventory \n\t7: More \n\t0: Exit"""
+            while True:
                 print(menu)
                 user_choice = input('Select Option: ')
+                print()
                 if user_choice == '1':
-                    ## Insert Test Value
-                    table = input('Enter Table: ')
-                    a = self.get_attributes(table)
-                    print(a)
+                    self.job()
                 elif user_choice == '2':
-                    ## Find test value
-                    table = input('Enter Table: ')
-                    Attributes = None
-                    Where = None
-                    Order = None
-                    if Attributes == None and Where == None and Order == None:
-                        self.print_sql(self.find(table))
-                    else:
-                        self.find(table, Attributes, Where, Order)
+                    self.sales()
                 elif user_choice == '3':
-                    ## Modify Value
-                    break
+                    self.employee()
                 elif user_choice == '4':
-                    ## Delete Value
-                    a = self.delete('Employee', 'Employee_ID', 'EMP000002')
-                    print(a)
+                    self.client()
+                elif user_choice == '5':
+                    self.suppliers()
+                elif user_choice == '6':
+                    self.inventory()
+                elif user_choice == '7':
+                    self.more()
+                elif user_choice == '0':
+                    break
+                else:
+                    print('Sorry that option was not found.')
                 self.commit_database()
                 print()
         finally:
             self.close_database()
             print('\nGoodbye')
+
+    def job(self):
+        job_menu = "Job Menu\n\t1: Create New Job \n\t2: Find Job \n\t3: Update Job \n\t4: Delete Job \n\t5: Job Tasks \n\t0: Exit"
+        while True:
+            print(job_menu)
+            user_choice = input('Select Option: ')
+            print()
+            if user_choice == '1':
+                ## New Job
+                preset = {'Job_ID':self.create_newID('Job'), 'Start_Date':self.get_current_datetime()}
+                user = {}
+                table = self.get_attributes('Job')
+                for a in table:
+                    print(a[1], a[2])
+                    ui = input('Enter value or leave blank for empty: ')
+                    if ui != '':
+                        user[a[1]] = ui
+                self.insert('Job', user, preset)
+                print('Success')
+            elif user_choice == '2':
+                ## Find Job
+                self
+            elif user_choice == '3':
+                ## Update Job
+                self
+            elif user_choice == '4':
+                ## Delete Job
+                self
+            elif user_choice == '5':
+                ## Job Task
+                self.task()
+            elif user_choice == '0':
+                break
+            else:
+                print('Sorry that option was not found.')
+            self.commit_database()
+            print()
+
+
+    def task(self):
+        task_menu = "Task Menu\n\t1: \n\t2: \n\t3: \n\t4: \n\t5: \n\t0: Exit"
+        return
+
+    def sales(self):
+        job_menu = " Menu\n\t1: \n\t2: \n\t3: \n\t4: \n\t5: \n\t0: Exit"
+        return
+
+    def employee(self):
+        job_menu = " Menu\n\t1: \n\t2: \n\t3: \n\t4: \n\t5: \n\t0: Exit"
+        return
+
+    def client(self):
+        job_menu = " Menu\n\t1: \n\t2: \n\t3: \n\t4: \n\t5: \n\t0: Exit"
+        return
+
+    def suppliers(self):
+        job_menu = " Menu\n\t1: \n\t2: \n\t3: \n\t4: \n\t5: \n\t0: Exit"
+        return
+
+    def inventory(self):
+        job_menu = " Menu\n\t1: \n\t2: \n\t3: \n\t4: \n\t5: \n\t0: Exit"
+        return
+
+    def more(self):
+        """ List options for campus, equipment, and more. """
+        job_menu = " Menu\n\t1: \n\t2: \n\t3: \n\t4: \n\t5: \n\t0: Exit"
+        return
 
 
 CLMain()

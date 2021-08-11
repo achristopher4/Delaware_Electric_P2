@@ -73,7 +73,7 @@ class DatabaseController:
         return (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S")
 
     def insert(self, table, user_value = None, preset_attribute_value = None):
-        """ Insert new value into a specified table with preset attributes if provided. """
+        """ Insert new value into a specified table with preset attributes if provided. Use Dictionary for optional args"""
         table_attributes = self.get_attributes(table)
         sql = f'INSERT INTO {table} ('
         attributes = ''
@@ -204,10 +204,11 @@ class DatabaseController:
         return
 
         ## Need to add more variables to where statement
-        ## Need to add operator chioces to attributes statement
-        ## Need to add TEXT value field, will fail if not int, real, or numeric
+        ## Need to add operator chioces to where clause
     def find(self, table, **additional):
-        """ Search a specified table with any. Attributes key: Exact Name of desired attribute. Where key: Index of attribute in get_attributes function. Order key: list, index 0 is the values, index 1 is the descending option if requested."""
+        """ Search a specified table with any. Attributes key: Exact Name of desired attribute.
+        Where key: Index of attribute in get_attributes function.
+        Order key: list, index 0 is the values, index 1 is the descending option if requested."""
         table_attributes = self.get_attributes(table)
         sql = 'SELECT '
         if len(additional) == 0:
@@ -280,11 +281,45 @@ class DatabaseController:
         """ Delete linked value(s) from a weak entity. """
         return
 
-    def modify_value(self):
-        """ Modify a specific value.  """
-        return
+    def update(self, table, ID, update_attribute_value=None, weak_table=None, update_weak=None, foreign_key=None):
+        """ Modify a specific value. update_attribute_value: enter arg as list with attribute name, type, and value in the list. weak_table: enter arg as list. """
+        find_ID = self.value_exists(table, f'{table}_ID', ID, text=True)
+        if weak_table != None and foreign_key == None:
+            ## Need to have new foreign key list in arg if weak_table is given in arg
+            return False
+        elif not find_ID:
+            ## Value does not exists within the specified table.
+            return False
+        else:
+            ## Update specified value
+            sql = f'UPDATE {table} SET '
+            for value in update_attribute_value:
+                if value[1] == 'TEXT':
+                    ## UPDATE TEXT attribute
+                    sql += f"{value[0]} = '{value[2]}', "
+                else:
+                    sql += f"{value[0]} = {value[2]}, "
+            sql = sql[:-2] + f"WHERE {table}_ID == '{ID}' "
+            self.__cur.execute(sql)
+            self.commit_database()
+            if weak_table != None:
+                ## Change foreign key in each listed table where applicable
+                if update_weak == None:
+                    update_weak = [[f'{table}_ID', 'TEXT', foreign_key]]
+                for t in weak_table:
+                    sql = f'UPDATE {t} SET '
+                    for value in update_weak:
+                        if value[1] == 'TEXT':
+                            ## UPDATE TEXT attribute
+                            sql += f"{value[0]} = '{value[2]}', "
+                        else:
+                            sql += f"{value[0]} = {value[2]}, "
+                    sql = sql[:-2] + f"WHERE {table}_ID == '{ID}' "
+                    self.__cur.execute(sql)
+                    self.commit_database()
 
-    def modify_weak_value(self):
+            ## Not Started. Could be redundant code.
+    def update_weak(self):
         """ Modify a value and all weak values if applicable. """
         return
 
