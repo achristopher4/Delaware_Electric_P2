@@ -62,7 +62,6 @@ class DatabaseController:
         element = self.basic_execute('SELECT {}_ID FROM {} WHERE {}_ID == (SELECT MAX({}_ID) FROM {})'.format(table, table, table, table, table))
         element = element.fetchone()
         table_prefix = self.get_prefix(table)
-        print(element)
         if element == None:
             return table_prefix + '1'.zfill(6) if table_prefix != None else None
         else:
@@ -241,14 +240,14 @@ class DatabaseController:
                     query.append(f"{table_attributes[index[0]][1]} == {index[1]}")
                 else:
                     ## No type given
-                    e = 0
+                    query.append(f"{table_attributes[index[0]][1]} == {index[1]}")
             sql += 'WHERE ' + ' AND '.join(query)
         if 'Order' in additional:
             ## The most genreal search of a table, but the query results are ordered
-            if len(additional['ORDER']) == 1:
-                sql += f" ORDER {additional['ORDER'][0]}"
+            if len(additional['Order']) == 1:
+                sql += f" ORDER BY {additional['Order'][0]}"
             else:
-                sql += f" ORDER {additional['ORDER'][0]} DESC"
+                sql += f" ORDER BY {additional['Order'][0]} DESC"
         return self.__cur.execute(sql)
 
             ## Not Started. Could be redundant code.

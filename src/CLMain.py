@@ -64,7 +64,29 @@ class CLMain(DatabaseController):
                 print('Success')
             elif user_choice == '2':
                 ## Find Job
-                self
+                table_attributes = self.get_attributes('Job')
+                selected_attributes = []
+                for attribute in table_attributes:
+                    print(attribute[0], attribute[1], attribute[2])
+                    value = input('Search by value or leave blank to not search by: ')
+                    if value != '':
+                        selected_attributes.append([attribute[0], value])
+                order = input('Enter index of attribute or leave blank to not order: ')
+                if order != '':
+                    asec_or_desc = input('Enter Desc to order descending value or leave blank to order in ascending: ')
+                if selected_attributes == [] and order == '':
+                    results = self.find('Job')
+                elif selected_attributes == [] and order != '' and asec_or_desc == '':
+                    results = self.find('Job', Order = [table_attributes[int(order)][1]])
+                elif selected_attributes == [] and order != '' and asec_or_desc != '':
+                    results = self.find('Job', Order = [table_attributes[int(order)][1], True])
+                elif selected_attributes != [] and order == '':
+                    results = self.find('Job', Where = selected_attributes)
+                elif selected_attributes != [] and order != '' and asec_or_desc == '':
+                    results = self.find('Job', Where = selected_attributes, Order = [table_attributes[int(order)][1]])
+                else:
+                    results = self.find('Job', Where = selected_attributes, Order = [table_attributes[int(order)][1], True])
+                self.print_sql(results)
             elif user_choice == '3':
                 ## Update Job
                 self
