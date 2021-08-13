@@ -21,19 +21,19 @@ class CLMain(DatabaseController):
                 user_choice = input('Select Option: ')
                 print()
                 if user_choice == '1':
-                    self.job()
+                    self.table('Job')
                 elif user_choice == '2':
-                    self.sales()
+                    self.table('Sales')
                 elif user_choice == '3':
-                    self.employee()
+                    self.table('Employee')
                 elif user_choice == '4':
-                    self.client()
+                    self.table('Client')
                 elif user_choice == '5':
-                    self.suppliers()
+                    self.table('Supplier')
                 elif user_choice == '6':
-                    self.inventory()
+                    self.table('Inventory')
                 elif user_choice == '7':
-                    self.more()
+                    self.table('More')
                 elif user_choice == '0':
                     break
                 else:
@@ -43,6 +43,15 @@ class CLMain(DatabaseController):
         finally:
             self.close_database()
             print('\nGoodbye')
+
+    def table(self, table_choice):
+        """ A single option menu for table actions. Insert new data point, find a data point, update data point(s), delete data point in a specified table. """
+        if table_choice != 'More':
+            ## Use table_choice as the table name to proceed
+            job_menu = f"{} Menu\n\t1: Create New {} \n\t2: Find {} \n\t3: Update {} \n\t4: Delete {} \n\t5: More \n\t0: Exit"
+        else:
+            ## List the other table choices and options
+            return
 
     def job(self):
         job_menu = "Job Menu\n\t1: Create New Job \n\t2: Find Job \n\t3: Update Job \n\t4: Delete Job \n\t5: Job Tasks \n\t0: Exit"

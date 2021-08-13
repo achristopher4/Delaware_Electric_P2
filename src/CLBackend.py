@@ -57,6 +57,14 @@ class DatabaseController:
         'Task_Photo':'PJT', 'Employee_Time_Clock':'TCE'}
         return dic[table] if table in dic else None
 
+    def table_relations(self, table):
+        """ Return the table and any relationships the specified table has. """
+        tables = {'Job':['Task', 'Campus','Task_Photo', 'Client'], 'Employee':['Campus', 'Sales', 'Task', 'Manager', 'Employee_Photo', 'Employee_Time_Clock'],
+        'Sales':['Inventory', 'Client', 'Campus', 'Employee'], 'Client':['Job', 'Sales'], 'Supplier':['Inventory'],
+        'Inventory':['Campus', 'Sales', 'Task', 'Inventory_Photo'], 'Campus':['Job', 'Task', 'Sales', 'Inventory', 'Equipment', 'Equipment_Photo'],
+        'Equipment':['Campus', 'Equipment_Photo']}
+        return tables[table] if table in tables else False
+
     def create_newID(self, table):
         """ Create a new unique ID for a table """
         element = self.basic_execute('SELECT {}_ID FROM {} WHERE {}_ID == (SELECT MAX({}_ID) FROM {})'.format(table, table, table, table, table))
