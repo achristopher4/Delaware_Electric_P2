@@ -324,6 +324,7 @@ class DatabaseController:
                     sql = sql[:-2] + f"WHERE {table}_ID == '{ID}' "
                     self.__cur.execute(sql)
                     self.commit_database()
+            return True
 
             ## Not Started. Could be redundant code.
     def update_weak(self):
