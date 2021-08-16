@@ -84,7 +84,7 @@ FOREIGN KEY (Campus_ID) REFERENCES Campus(Campus_ID))
 
 ## Equipment Photo
 c.execute(''' CREATE TABLE IF NOT EXISTS Equipment_Photo(
-Equipment_Photo_ID TEXT PRIMARY KEY NOT NULL, Equipment_ID TEXT, Server TEXT, Company_Name TEXT, Campus_ID TEXT,
+Equipment_Photo_ID TEXT PRIMARY KEY NOT NULL, Equipment_ID TEXT, Server TEXT, Company_Name TEXT,
 FOREIGN KEY (Campus_ID) REFERENCES Campus(Campus_ID),
 FOREIGN KEY (Equipment_ID) REFERENCES Equipment(Equipment_ID))
 ''')

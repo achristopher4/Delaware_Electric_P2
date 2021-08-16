@@ -1,4 +1,4 @@
-## This is a testing document to test general code functions to interface with the database
+## This document is to test general code functions to interface with the database
 ## Author: Alexander Christopher
 ## Date: 07/27/2021
 
@@ -59,15 +59,21 @@ class DatabaseController:
 
     def table_relations(self, table):
         """ Return the table and any relationships the specified table has. """
-        tables = {'Job':['Task', 'Campus','Task_Photo', 'Client'], 'Employee':['Campus', 'Sales', 'Task', 'Manager', 'Employee_Photo', 'Employee_Time_Clock'],
-        'Sales':['Inventory', 'Client', 'Campus', 'Employee'], 'Client':['Job', 'Sales'], 'Supplier':['Inventory'],
-        'Inventory':['Campus', 'Sales', 'Task', 'Inventory_Photo'], 'Campus':['Job', 'Task', 'Sales', 'Inventory', 'Equipment', 'Equipment_Photo'],
-        'Equipment':['Campus', 'Equipment_Photo']}
+        tables = {'Job':['Task','Task_Photo'], 'Employee':['Sales', 'Task', 'Manager', 'Employee_Photo', 'Employee_Time_Clock'],
+        'Sales':[], 'Client':['Job', 'Sales'], 'Supplier':['Inventory'], 'Inventory':['Inventory_Photo'],
+        'Campus':['Job', 'Task', 'Sales', 'Inventory', 'Equipment', 'Employee'],
+        'Equipment':['Equipment_Photo']}
+        return tables[table] if table in tables else False
+
+    def dependent_tables(self, table):
+        """ Return the tables are dependent upon another for a meaning. """
+        tables = {'Job':['Task','Task_Photo'], 'Employee':['Manager', 'Employee_Photo', 'Employee_Time_Clock'], 'Sales':[], 'Client':[],
+        'Supplier':[], 'Inventory':['Inventory_Photo'], 'Campus':[], 'Equipment':['Equipment_Photo']}
         return tables[table] if table in tables else False
 
     def create_newID(self, table):
         """ Create a new unique ID for a table """
-        element = self.basic_execute('SELECT {}_ID FROM {} WHERE {}_ID == (SELECT MAX({}_ID) FROM {})'.format(table, table, table, table, table))
+        element = self.basic_execute("SELECT {}_ID FROM {} WHERE {}_ID == (SELECT MAX({}_ID) FROM {}) AND {}_ID LIKE '{}%' ".format(table, table, table, table, table, table, self.get_prefix(table)))
         element = element.fetchone()
         table_prefix = self.get_prefix(table)
         if element == None:
@@ -347,4 +353,8 @@ class DatabaseController:
 
     def count_results(self):
         """ Return the number of results that are returned from query. """
+        return
+
+    def employee_time(self):
+        """ A function for managing the employee_time_clock table. """
         return
