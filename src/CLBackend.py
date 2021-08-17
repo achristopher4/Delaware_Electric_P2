@@ -211,11 +211,6 @@ class DatabaseController:
         except:
             return False
 
-            ## Not Started. Could be redundant code.
-    def insert_weak(self, table, ID, user_value=None, preset_attributes=None):
-        """ Insert new value into a specified weak table with preset attributes if provided. """
-        return
-
         ## Need to add more variables to where statement
         ## Need to add operator chioces to where clause
     def find(self, table, **additional):
@@ -264,11 +259,6 @@ class DatabaseController:
                 sql += f" ORDER BY {additional['Order'][0]} DESC"
         return self.__cur.execute(sql)
 
-            ## Not Started. Could be redundant code.
-    def find_weak(self):
-        """ """
-        return
-
     def delete(self, table, attribute, ID, weak_table=None, weak_attribute=None):
         """ Delete an item from a table. Weak table given as list."""
         find_ID = self.value_exists(table, attribute, ID, text=True)
@@ -283,16 +273,15 @@ class DatabaseController:
             else:
                 ## Delete the value given from the table and all of its attributes linked to this value
                 for wt in weak_table:
-                    if self.value_exists(wt, f'{table}_ID', ID):
-                        self.__cur.execute(f"DELETE FROM {wt} WHERE {table}_ID == '{ID}'")
+                    try:
+                        if self.value_exists(wt, f'{table}_ID', ID, text=True):
+                            self.__cur.execute(f"DELETE FROM {wt} WHERE {table}_ID == '{ID}'")
+                    except:
+                        if self.value_exists(wt, f'{wt}_ID', ID, text=True):
+                            self.__cur.execute(f"DELETE FROM {wt} WHERE {table}_ID == '{ID}'")
                 self.__cur.execute(f"DELETE FROM {table} WHERE {table}_ID == '{ID}'")
         self.commit_database()
         return True
-
-            ## Not Started. Could be redundant code.
-    def delete_weak(self, table, ID):
-        """ Delete linked value(s) from a weak entity. """
-        return
 
     def update(self, table, ID, update_attribute_value=None, weak_table=None, update_weak=None, foreign_key=None):
         """ Modify a specific value. update_attribute_value: enter arg as list with attribute name, type, and value in the list. weak_table: enter arg as list. """
@@ -331,11 +320,6 @@ class DatabaseController:
                     self.__cur.execute(sql)
                     self.commit_database()
             return True
-
-            ## Not Started. Could be redundant code.
-    def update_weak(self):
-        """ Modify a value and all weak values if applicable. """
-        return
 
     def value_exists(self, table, attribute, value, like=False, text=False):
         """ Return True if a value exists with specified attribute values or False if it does not. table arg: list the table to search. attribute arg: list the attribute search by. value arg: list the value to find in the table. like arg: specify if like clause will be used in statement. text arg: will use quotes in clause."""
