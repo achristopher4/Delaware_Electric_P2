@@ -71,6 +71,15 @@ class CLMain(DatabaseController):
                     print(a[1], a[2])
                     if 'Start' in a[1] or 'Purchase_Date' == a[1]:
                         preset[a[1]] = self.get_current_datetime()
+                    elif 'Year' == a[1]:
+                        ## Default to current year
+                        preset[a[1]] = int((datetime.datetime.now()).strftime("%Y"))
+                    elif 'Week' == a[1]:
+                        ## Default to current month
+                        preset[a[1]] = int(datetime.datetime.now().isocalendar()[1])
+                    elif 'Day' == a[1]:
+                        ## Default to current day
+                        preset[a[1]] = int((datetime.datetime.now()).strftime("%d"))
                     ui = input('Enter value or leave blank for empty: ')
                     if ui != '':
                         user[a[1]] = ui
