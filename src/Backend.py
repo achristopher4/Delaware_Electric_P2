@@ -33,8 +33,10 @@ class DatabaseController:
         self.__conn.close()
 
     def print_sql(self, sql):
-        """ Print sql objects to command line. """
-        for line in sql: print(line)
+        """ Return sql objects in list """
+        lines = []
+        for line in sql: lines.append(line)
+        return lines
 
     def get_attributes(self, table):
         """ Return the attributes of a table. """
